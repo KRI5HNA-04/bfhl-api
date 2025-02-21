@@ -1,4 +1,4 @@
-const express = require("express");
+// const express = require("express");
 const cors = require("cors");
 
 const app = express();
@@ -10,38 +10,46 @@ app.get("/bfhl", (req, res) => {
   res.json({ message: "BFHL API is working! Use POST to send data." });
 });
 
-// POST route to process input data
-app.post("/bfhl", (req, res) => {
-  try {
-    if (!req.body || !req.body.data || !Array.isArray(req.body.data)) {
-      return res.status(400).json({
-        is_success: false,
-        message: "Invalid input! 'data' should be an array.",
-      });
-    }
+const express = require("express");
 
-    const data = req.body.data;
-    const numbers = data.filter((item) => !isNaN(item));
-    const alphabets = data.filter((item) => isNaN(item));
-    const highest_alphabet = alphabets.length
-      ? [alphabets.sort()[alphabets.length - 1]]
-      : [];
+app.use(express.json());
+
+app
+  .route("/bfhl")
+  .get((req, res) => {
+    res.status(200).json({ operation_code: 1 });
+  })
+  .post((req, res) => {
+    const data = req.body.data || [];
+    const numbers = [];
+    const alphabets = [];
+    let highest_alphabet = "";
+
+    for (const item of data) {
+      if (!isNaN(item)) {
+        numbers.push(item);
+      } else if (item.length === 1 && isNaN(item)) {
+        alphabets.push(item);
+        if (
+          !highest_alphabet ||
+          item.toUpperCase() > highest_alphabet.toUpperCase()
+        ) {
+          highest_alphabet = item;
+        }
+      }
+    }
 
     res.json({
       is_success: true,
-      user_id: "RSKrishna",
-      email: "22BCS11146@cuchd.in",
-      roll_number: "22BCS11146",
-      numbers,
-      alphabets,
-      highest_alphabet,
+      user_id: "sanhita17",
+      email: "sanhita.kundu2020@vitstudent.ac.in",
+      roll_number: "20BEC0215",
+      numbers: numbers,
+      alphabets: alphabets,
+      highest_alphabet: highest_alphabet ? [highest_alphabet] : [],
     });
-  } catch (error) {
-    res.status(500).json({ is_success: false, message: "Server error!" });
-  }
-});
+  });
 
-// Start the server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
