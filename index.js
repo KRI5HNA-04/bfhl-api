@@ -1,54 +1,57 @@
-// const express = require("express");
+const express = require("express");
 const cors = require("cors");
 
 const app = express();
+
+// Middleware
 app.use(express.json());
 app.use(cors());
 
-// GET route to check if the API is running
+
 app.get("/bfhl", (req, res) => {
-  res.json({ message: "BFHL API is working! Use POST to send data." });
+  res.status(200).json({ operation_code: 1 });
 });
 
-const express = require("express");
 
-app.use(express.json());
+app.post("/bfhl", (req, res) => {
+  // Validate input
+  if (!req.body || !Array.isArray(req.body.data)) {
+    return res.status(400).json({
+      is_success: false,
+      message: "Invalid input! 'data' should be an array.",
+    });
+  }
 
-app
-  .route("/bfhl")
-  .get((req, res) => {
-    res.status(200).json({ operation_code: 1 });
-  })
-  .post((req, res) => {
-    const data = req.body.data || [];
-    const numbers = [];
-    const alphabets = [];
-    let highest_alphabet = "";
+  const data = req.body.data;
+  const numbers = [];
+  const alphabets = [];
+  let highest_alphabet = "";
 
-    for (const item of data) {
-      if (!isNaN(item)) {
-        numbers.push(item);
-      } else if (item.length === 1 && isNaN(item)) {
-        alphabets.push(item);
-        if (
-          !highest_alphabet ||
-          item.toUpperCase() > highest_alphabet.toUpperCase()
-        ) {
-          highest_alphabet = item;
-        }
+
+  for (const item of data) {
+    if (!isNaN(item)) {
+      numbers.push(item);
+    } else if (typeof item === "string" && item.length === 1) {
+      alphabets.push(item);
+      if (
+        !highest_alphabet ||
+        item.toUpperCase() > highest_alphabet.toUpperCase()
+      ) {
+        highest_alphabet = item;
       }
     }
+  }
 
-    res.json({
-      is_success: true,
-      user_id: "sanhita17",
-      email: "sanhita.kundu2020@vitstudent.ac.in",
-      roll_number: "20BEC0215",
-      numbers: numbers,
-      alphabets: alphabets,
-      highest_alphabet: highest_alphabet ? [highest_alphabet] : [],
-    });
+  res.json({
+    is_success: true,
+    user_id: "Krishna",
+    email: "22BCS11146@cuchd.in",
+    roll_number: "22BCS11146",
+    numbers,
+    alphabets,
+    highest_alphabet: highest_alphabet ? [highest_alphabet] : [],
   });
+});
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
